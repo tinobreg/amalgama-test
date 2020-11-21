@@ -1,10 +1,10 @@
 <?php
 
-namespace classes;
+namespace royalWars;
 
 /**
  * Class Archer
- * @package classes
+ * @package royalWars
  */
 class Archer extends RegimentUnit
 {

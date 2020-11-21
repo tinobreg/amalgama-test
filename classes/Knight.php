@@ -1,10 +1,10 @@
 <?php
 
-namespace classes;
+namespace royalWars;
 
 /**
  * Class Knight
- * @package classes
+ * @package royalWars
  */
 class Knight extends RegimentUnit
 {

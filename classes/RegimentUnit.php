@@ -1,14 +1,14 @@
 <?php
 
 
-namespace classes;
+namespace royalWars;
 
-use classes\interfaces\ITrainable;
-use classes\interfaces\ITransformable;
+use royalWars\interfaces\ITrainable;
+use royalWars\interfaces\ITransformable;
 
 /**
  * Class RegimentUnity
- * @package classes
+ * @package royalWars
  */
 abstract class RegimentUnit implements ITrainable, ITransformable
 {

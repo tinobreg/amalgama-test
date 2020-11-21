@@ -1,11 +1,11 @@
 <?php
 
 
-namespace classes\interfaces;
+namespace royalWars\interfaces;
 
 /**
  * Interface ITransformable
- * @package classes\interfaces
+ * @package royalWars\interfaces
  */
 interface ITransformable
 {

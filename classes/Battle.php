@@ -1,11 +1,11 @@
 <?php
 
 
-namespace classes;
+namespace royalWars;
 
 /**
  * Class Battle
- * @package classes
+ * @package royalWars
  */
 class Battle
 {

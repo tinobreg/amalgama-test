@@ -1,13 +1,13 @@
 <?php
 
-namespace classes;
+namespace royalWars;
 
-use classes\interfaces\ITrainable;
-use classes\interfaces\ITransformable;
+use royalWars\interfaces\ITrainable;
+use royalWars\interfaces\ITransformable;
 
 /**
  * Class Regiment
- * @package classes
+ * @package royalWars
  */
 class Regiment
 {

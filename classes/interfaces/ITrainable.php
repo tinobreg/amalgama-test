@@ -1,10 +1,10 @@
 <?php
 
-namespace classes\interfaces;
+namespace royalWars\interfaces;
 
 /**
  * Interface ITrainable
- * @package classes\interfaces
+ * @package royalWars\interfaces
  */
 interface ITrainable
 {
