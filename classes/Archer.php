@@ -6,7 +6,7 @@ namespace classes;
  * Class Archer
  * @package classes
  */
-class Archer extends RegimentUnity
+class Archer extends RegimentUnit
 {
 
     /**
@@ -23,7 +23,7 @@ class Archer extends RegimentUnity
     /**
      * @inheritDoc
      */
-    public function canMakeTransformation()
+    public function canBeTransformed()
     {
         return true;
     }
@@ -41,6 +41,6 @@ class Archer extends RegimentUnity
      */
     public function getCurrentType()
     {
-        return RegimentUnity::UNITY_ARCHER;
+        return RegimentUnit::UNITY_ARCHER;
     }
 }

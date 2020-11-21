@@ -3,14 +3,14 @@
 
 namespace classes;
 
-use classes\interfaces\IEvolveable;
-use classes\interfaces\ITrainnable;
+use classes\interfaces\ITrainable;
+use classes\interfaces\ITransformable;
 
 /**
  * Class RegimentUnity
  * @package classes
  */
-abstract class RegimentUnity implements ITrainnable, IEvolveable
+abstract class RegimentUnit implements ITrainable, ITransformable
 {
     /**
      * Possibles Unities types
@@ -75,4 +75,15 @@ abstract class RegimentUnity implements ITrainnable, IEvolveable
     {
         $this->trainingQuantity = $this->trainingQuantity + 1;
     }
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function canBeTransformed();
+
+    /**
+     * Returns the actual type
+     * @return integer
+     */
+    abstract public function getCurrentType();
 }

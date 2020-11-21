@@ -6,7 +6,7 @@ namespace classes;
  * Class Knight
  * @package classes
  */
-class Knight extends RegimentUnity
+class Knight extends RegimentUnit
 {
     /**
      * Knight constructor.
@@ -21,7 +21,7 @@ class Knight extends RegimentUnity
     /**
      * @inheritDoc
      */
-    public function canMakeTransformation()
+    public function canBeTransformed()
     {
         return false;
     }

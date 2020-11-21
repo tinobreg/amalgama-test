@@ -22,65 +22,26 @@ class War
     const WIN_PRICE = 100;
 
     /**
-     * Stores the civilizations
-     * @var array
+     * Receives two regiments and process their power to define the battle winner
+     * @param Regiment $firstRegiment
+     * @param Regiment $secondRegiment
      */
-    private $civilizations = [];
-
-    public function addCivilization($name, $archers = 0, $knights = 0, $pikemen = 0)
+    public static function newBattle(Regiment $firstRegiment, Regiment $secondRegiment)
     {
-        $id = 'c_'.time();
-        $this->civilizations[$id] = new Civilization($id, $name, $archers, $knights, $pikemen);
-    }
+        $firstRegimentPower = $firstRegiment->getRegimentTotalPower();
+        $secondRegimentPower = $secondRegiment->getRegimentTotalPower();
 
-
-    /**
-     * @param $firstCivilization
-     * @param $firstRegiment
-     * @param $secondCivilization
-     * @param $secondRegiment
-     * @throws \Exception
-     */
-    public function newBattle($firstCivilization, $firstRegiment, $secondCivilization, $secondRegiment)
-    {
-        /** @var Regiment $firstRegimentModel */
-        $firstRegimentModel = $this->loadRegimentFromCivilization($firstCivilization, $firstRegiment);
-        /** @var Regiment $secondRegimentModel */
-        $secondRegimentModel =  $this->loadRegimentFromCivilization($secondCivilization, $secondRegiment);
-
-        $firstRegimentPower = $firstRegimentModel->getRegimentTotalPower();
-        $secondRegimentPower = $secondRegimentModel->getRegimentTotalPower();
+        $firstRegimentResult = War::BATTLE_LOSE;
+        $secondRegimentResult = War::BATTLE_WIN;
 
         if ($firstRegimentPower == $secondRegimentPower) {
-            $firstRegimentModel->loadBattle($secondCivilization, $secondRegimentModel, $firstRegimentPower.' - '.$secondRegimentPower, War::BATTLE_TIE);
-            $secondRegimentModel->loadBattle($firstCivilization, $firstRegiment, $secondRegimentPower.' - '.$firstRegimentPower, War::BATTLE_TIE);
+            $firstRegimentResult = $secondRegimentResult = War::BATTLE_TIE;
         } else if($firstRegimentPower > $secondRegimentPower) {
-            $firstRegimentModel->loadBattle($secondCivilization, $secondRegimentModel, $firstRegimentPower.' - '.$secondRegimentPower, War::BATTLE_WIN);
-            $secondRegimentModel->loadBattle($firstCivilization, $firstRegiment, $secondRegimentPower.' - '.$firstRegimentPower, War::BATTLE_LOSE);
-        } else {
-            $firstRegimentModel->loadBattle($secondCivilization, $secondRegimentModel, $firstRegimentPower.' - '.$secondRegimentPower, War::BATTLE_LOSE);
-            $secondRegimentModel->loadBattle($firstCivilization, $firstRegiment, $secondRegimentPower.' - '.$firstRegimentPower, War::BATTLE_WIN);
-        }
-    }
-
-    /**
-     * @param $civilizationId
-     * @param $regimentId
-     * @return mixed
-     * @throws \Exception
-     */
-    private function loadRegimentFromCivilization($civilizationId, $regimentId)
-    {
-        if(!empty($this->civilizations[$civilizationId])) {
-            $civilization = $this->civilizations[$civilizationId];
-            if($civilization instanceof Civilization) {
-                $regiment = $civilization->getRegiment($regimentId);
-                if($regiment instanceof Regiment) {
-                    return $regiment;
-                }
-            }
+            $firstRegimentResult = War::BATTLE_WIN;
+            $secondRegimentResult = War::BATTLE_LOSE;
         }
 
-        throw new \Exception('Civilizacion o Regimiento invalido');
+        $firstRegiment->saveBattleDetails($secondRegiment, $firstRegimentResult);
+        $secondRegiment->saveBattleDetails($firstRegiment, $secondRegimentResult);
     }
 }

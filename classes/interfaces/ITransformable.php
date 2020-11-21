@@ -4,28 +4,26 @@
 namespace classes\interfaces;
 
 /**
- * Interface IEvolveable
+ * Interface ITransformable
  * @package classes\interfaces
  */
-interface IEvolveable
+interface ITransformable
 {
     /**
+     * Returns if can be transformed
      * @return boolean
      */
-    public function canMakeTransformation();
+    public function canBeTransformed();
 
     /**
+     * Returns the transformation cost
      * @return integer
      */
     public function getTransformationCost();
 
     /**
+     * Returns the transformation new model
      * @return integer
      */
     public function getTransformationNewModel();
-
-    /**
-     * @return integer
-     */
-    public function getCurrentType();
 }

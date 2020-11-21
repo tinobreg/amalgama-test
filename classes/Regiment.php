@@ -2,6 +2,9 @@
 
 namespace classes;
 
+use classes\interfaces\ITrainable;
+use classes\interfaces\ITransformable;
+
 /**
  * Class Regiment
  * @package classes
@@ -9,10 +12,16 @@ namespace classes;
 class Regiment
 {
     /**
-     * Regiment ID
+     * Identification
      * @var string
      */
     public $id;
+
+    /**
+     * Civilization
+     * @var string
+     */
+    public $civilizationName;
 
     /**
      * Regiment gold
@@ -34,97 +43,110 @@ class Regiment
 
     /**
      * Regiment constructor.
+     * @param $civilizationName
      * @param int $archers
      * @param int $knights
      * @param int $pikemen
      */
-    public function __construct($id, $archers = 0, $knights = 0, $pikemen = 0)
+    public function __construct($civilizationName, $archers = 0, $knights = 0, $pikemen = 0)
     {
-        $this->id = $id;
+        $this->id = 'regiment_'.time();
+        $this->civilizationName = $civilizationName;
 
         while ($archers > 0) {
-            $this->unities[RegimentUnity::UNITY_ARCHER] = new Archer();
+            $this->unities[RegimentUnit::UNITY_ARCHER] = new Archer();
             $archers--;
         }
 
         while ($knights > 0) {
-            $this->unities[RegimentUnity::UNITY_KNIGHT] = new Knight();
+            $this->unities[RegimentUnit::UNITY_KNIGHT] = new Knight();
             $knights--;
         }
 
         while ($pikemen > 0) {
-            $this->unities[RegimentUnity::UNITY_PIKEMAN] = new Pikeman();
+            $this->unities[RegimentUnit::UNITY_PIKEMAN] = new Pikeman();
             $pikemen--;
         }
     }
 
     /**
-     * @param $unity
+     * Tries to train given unity
+     * @param string $unitType
      * @return string
      */
-    public function trainRegimentUnity($unity)
+    public function trainRegimentUnit($unitType)
     {
-        if (!empty($this->unities[$unity])) {
-            $unityModel = $this->unities[$unity][rand(0, count($this->unities[$unity]))];
-            if ($unityModel instanceof RegimentUnity) {
-                if ($unityModel->getTrainingCost() <= $this->gold) {
-                    if ($unityModel->startTraining()) {
-                        $this->gold = $this->gold - $unityModel->getTrainingCost();
+        if (!empty($this->unities[$unitType])) {
+            $regimentUnit = $this->unities[$unitType][rand(0, count($this->unities[$unitType]))];
+            if ($regimentUnit instanceof ITrainable) {
+                if ($regimentUnit->getTrainingCost() <= $this->gold) {
+                    if ($regimentUnit->startTraining()) {
+                        $this->gold = $this->gold - $regimentUnit->getTrainingCost();
                         return 'Entrenamiento finalizado';
                     }
-
-                    return 'No se pudo completar el entrenamiento';
                 }
                 return 'No tienes suficiente oro';
             }
-            return 'La unidad no es una unidad valida';
+            return 'No se pudo entrenar la unidad';
         }
 
         return 'No tienes unidades para entrenar';
     }
 
     /**
-     * @param $unity
+     * Tries to transform given unity
+     * @param string $unitType
      * @return string
      */
-    public function transformRegimentUnity($unity)
+    public function transformRegimentUnit($unitType)
     {
-        if (!empty($this->unities[$unity])) {
-            $position = rand(0, count($this->unities[$unity]));
-            $unityModel = $this->unities[$unity][$position];
-            if ($unityModel instanceof RegimentUnity) {
-                if ($unityModel->canMakeTransformation()) {
-                    if ($unityModel->getTransformationCost() <= $this->gold) {
-                        $this->gold = $this->gold - $unityModel->getTransformationCost();
-                        $newModel = $unityModel->getTransformationNewModel();
+        if (!empty($this->unities[$unitType])) {
+            $position = rand(0, count($this->unities[$unitType]));
+            $currentRegimentUnit = $this->unities[$unitType][$position];
 
-                        if ($newModel instanceof RegimentUnity) {
-                            unset($this->unities[$unity][$position]);
-                            $this->unities[$newModel->getCurrentType()][] = $newModel;
-                            return 'Entrenamiento finalizado';
-                        }
-                        return 'La unidad no se pudo transformar la unidad';
+            if ($currentRegimentUnit instanceof ITransformable && $currentRegimentUnit->canMakeTransformation()) {
+                if ($currentRegimentUnit->getTransformationCost() <= $this->gold) {
+                    $this->gold = $this->gold - $currentRegimentUnit->getTransformationCost();
+                    $newRegimentUnit = $currentRegimentUnit->getTransformationNewModel();
+
+                    if ($newRegimentUnit instanceof RegimentUnit) {
+                        unset($this->unities[$unitType][$position]);
+                        $this->unities[$newRegimentUnit->getCurrentType()][] = $newRegimentUnit;
+                        return 'Entrenamiento finalizado';
                     }
+                } else {
                     return 'No tienes suficiente oro';
                 }
-                return 'La unidad no se puede transformar';
             }
-            return 'La unidad no es una unidad valida';
+            return 'La unidad no se pudo transformar';
         }
         return 'No tienes unidades para entrenar';
     }
 
     /**
      * Save the battle and process the result
-     * @param $civilization
-     * @param $regiment
-     * @param $score
+     * @param Regiment $regiment
      * @param $result
      */
-    public function loadBattle($civilization, $regiment, $score, $result)
+    public function saveBattleDetails($regiment, $result)
     {
-        $this->battleHistory[] = ['civilization' => $civilization, 'regiment' => $regiment, 'score' => $score, 'result' => $result];
+        /** @var Regiment $regiment */
+        $this->battleHistory[] = [
+            'civilization' => $regiment->civilizationName,
+            'regiment' => $regiment->id,
+            'score' => $this->getRegimentTotalPower().' - '.$regiment->getRegimentTotalPower() ,
+            'result' => $result
+        ];
 
+        $this->processBattleResult($result);
+    }
+
+    /**
+     * Process the given Battle result and applies the rewards or punishments
+     * @param $result
+     */
+    private function processBattleResult($result)
+    {
         if ($result == War::BATTLE_WIN) {
             $this->gold = $this->gold + War::WIN_PRICE;
         } else if ($result == War::BATTLE_LOSE) {
@@ -138,12 +160,12 @@ class Regiment
                 }
             }
         } else if ($result == War::BATTLE_TIE) {
-            unlink($this->unities[RegimentUnity::UNITY_PIKEMAN][rand(0, count($this->unities[RegimentUnity::UNITY_PIKEMAN]))]);
+            unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][rand(0, count($this->unities[RegimentUnit::UNITY_PIKEMAN]))]);
         }
     }
 
     /**
-     * Returns the position of the powerest Unity
+     * Returns the position of the strongest Unity
      * @return array
      */
     private function getStrongestUnity()
@@ -153,7 +175,7 @@ class Regiment
 
         foreach ($this->unities as $type => $unities) {
             foreach ($unities as $pos => $unity) {
-                /** @var RegimentUnity $unity */
+                /** @var RegimentUnit $unity */
                 if ($unity->getTotalPower() > $maxPower) {
                     $maxPower = $unity->getTotalPower();
                     $ret = [
@@ -168,7 +190,7 @@ class Regiment
     }
 
     /**
-     * Return all unities power
+     * Returns the total power amount of regiment unities
      * @return integer
      */
     public function getRegimentTotalPower()
@@ -176,7 +198,7 @@ class Regiment
         $totalPower = 0;
         foreach ($this->unities as $type => $unities) {
             foreach ($unities as $pos => $unity) {
-                /** @var RegimentUnity $unity */
+                /** @var RegimentUnit $unity */
                 $totalPower += $unity->getTotalPower();
             }
         }

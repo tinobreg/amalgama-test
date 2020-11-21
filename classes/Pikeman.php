@@ -6,7 +6,7 @@ namespace classes;
  * Class Pikeman
  * @package classes
  */
-class Pikeman extends RegimentUnity
+class Pikeman extends RegimentUnit
 {
     /**
      * Pikeman constructor.
@@ -22,7 +22,7 @@ class Pikeman extends RegimentUnity
     /**
      * @inheritDoc
      */
-    public function canMakeTransformation()
+    public function canBeTransformed()
     {
         return true;
     }
@@ -40,6 +40,6 @@ class Pikeman extends RegimentUnity
      */
     public function getCurrentType()
     {
-        return RegimentUnity::UNITY_PIKEMAN;
+        return RegimentUnit::UNITY_PIKEMAN;
     }
 }
