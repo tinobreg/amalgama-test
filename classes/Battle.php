@@ -4,10 +4,10 @@
 namespace classes;
 
 /**
- * Class War
+ * Class Battle
  * @package classes
  */
-class War
+class Battle
 {
     /**
      * List of possibles results
@@ -31,14 +31,14 @@ class War
         $firstRegimentPower = $firstRegiment->getRegimentTotalPower();
         $secondRegimentPower = $secondRegiment->getRegimentTotalPower();
 
-        $firstRegimentResult = War::BATTLE_LOSE;
-        $secondRegimentResult = War::BATTLE_WIN;
+        $firstRegimentResult = static::BATTLE_LOSE;
+        $secondRegimentResult = static::BATTLE_WIN;
 
         if ($firstRegimentPower == $secondRegimentPower) {
-            $firstRegimentResult = $secondRegimentResult = War::BATTLE_TIE;
+            $firstRegimentResult = $secondRegimentResult = static::BATTLE_TIE;
         } else if($firstRegimentPower > $secondRegimentPower) {
-            $firstRegimentResult = War::BATTLE_WIN;
-            $secondRegimentResult = War::BATTLE_LOSE;
+            $firstRegimentResult = static::BATTLE_WIN;
+            $secondRegimentResult = static::BATTLE_LOSE;
         }
 
         $firstRegiment->saveBattleDetails($secondRegiment, $firstRegimentResult);

@@ -15,30 +15,31 @@ class Regiment
      * Identification
      * @var string
      */
-    public $id;
+    private $id;
 
     /**
      * Civilization
      * @var string
      */
-    public $civilizationName;
+    private $civilizationName;
 
     /**
      * Regiment gold
      * @var int
      */
-    public $gold = 1000;
+    private $gold = 1000;
 
     /**
      * Regiment unities
      * @var array
      */
-    public $unities = [];
+    private $unities = [];
 
     /**
+     * Stores the regiment battle history
      * @var array
      */
-    public $battleHistory = [];
+    private $battleHistory = [];
 
 
     /**
@@ -67,6 +68,24 @@ class Regiment
             $this->unities[RegimentUnit::UNITY_PIKEMAN] = new Pikeman();
             $pikemen--;
         }
+    }
+
+    /**
+     * Returns the Regiment Civilization Name
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->civilizationName;
+    }
+
+    /**
+     * Returns the Regiment ID
+     * @return string
+     */
+    public function getId()
+    {
+       return $this->id;
     }
 
     /**
@@ -132,8 +151,8 @@ class Regiment
     {
         /** @var Regiment $regiment */
         $this->battleHistory[] = [
-            'civilization' => $regiment->civilizationName,
-            'regiment' => $regiment->id,
+            'civilization' => $regiment->getName(),
+            'regiment' => $regiment->getId(),
             'score' => $this->getRegimentTotalPower().' - '.$regiment->getRegimentTotalPower() ,
             'result' => $result
         ];
@@ -147,19 +166,19 @@ class Regiment
      */
     private function processBattleResult($result)
     {
-        if ($result == War::BATTLE_WIN) {
-            $this->gold = $this->gold + War::WIN_PRICE;
-        } else if ($result == War::BATTLE_LOSE) {
+        if ($result == Battle::BATTLE_WIN) {
+            $this->gold = $this->gold + Battle::WIN_PRICE;
+        } else if ($result == Battle::BATTLE_LOSE) {
             for ($x = 0; $x < 2; $x++) {
-                $pUnity = $this->getStrongestUnity();
+                $pUnit = $this->getStrongestUnit();
 
-                if (!empty($pUnity) && !empty($this->unities[$pUnity['type']][$pUnity['unity']])) {
-                    unlink($this->unities[$pUnity['type']][$pUnity['unity']]);
+                if (!empty($pUnit) && !empty($this->unities[$pUnit['type']][$pUnit['unit']])) {
+                    unlink($this->unities[$pUnit['type']][$pUnit['unit']]);
                 } else {
                     $x--;
                 }
             }
-        } else if ($result == War::BATTLE_TIE) {
+        } else if ($result == Battle::BATTLE_TIE) {
             unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][rand(0, count($this->unities[RegimentUnit::UNITY_PIKEMAN]))]);
         }
     }
@@ -168,19 +187,19 @@ class Regiment
      * Returns the position of the strongest Unity
      * @return array
      */
-    private function getStrongestUnity()
+    private function getStrongestUnit()
     {
         $ret = [];
         $maxPower = 0;
 
         foreach ($this->unities as $type => $unities) {
-            foreach ($unities as $pos => $unity) {
-                /** @var RegimentUnit $unity */
-                if ($unity->getTotalPower() > $maxPower) {
-                    $maxPower = $unity->getTotalPower();
+            foreach ($unities as $pos => $unit) {
+                /** @var RegimentUnit $unit */
+                if ($unit->getTotalPower() > $maxPower) {
+                    $maxPower = $unit->getTotalPower();
                     $ret = [
                         'type' => $type,
-                        'unity' => $pos
+                        'unit' => $pos
                     ];
                 }
             }
@@ -197,9 +216,9 @@ class Regiment
     {
         $totalPower = 0;
         foreach ($this->unities as $type => $unities) {
-            foreach ($unities as $pos => $unity) {
-                /** @var RegimentUnit $unity */
-                $totalPower += $unity->getTotalPower();
+            foreach ($unities as $pos => $unit) {
+                /** @var RegimentUnit $unit */
+                $totalPower += $unit->getTotalPower();
             }
         }
 
