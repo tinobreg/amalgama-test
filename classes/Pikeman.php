@@ -2,12 +2,19 @@
 
 namespace royalWars;
 
+use royalWars\interfaces\ITransformable;
+
 /**
  * Class Pikeman
  * @package royalWars
  */
-class Pikeman extends RegimentUnit
+class Pikeman extends RegimentUnit implements ITransformable
 {
+    /**
+     * @var integer
+     */
+    protected $transformationCost;
+
     /**
      * Pikeman constructor.
      */
@@ -41,5 +48,13 @@ class Pikeman extends RegimentUnit
     public function getCurrentType()
     {
         return RegimentUnit::UNITY_PIKEMAN;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTransformationCost()
+    {
+        return $this->transformationCost;
     }
 }

@@ -21,25 +21,8 @@ class Knight extends RegimentUnit
     /**
      * @inheritDoc
      */
-    public function canBeTransformed()
-    {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     * @throws \Exception
-     */
-    public function getTransformationNewModel()
-    {
-        throw new \Exception('Esta unidad no puede ser transformada');
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getCurrentType()
     {
-        return RegimentUnity::UNITY_KNIGHT;
+        return RegimentUnit::UNITY_KNIGHT;
     }
 }

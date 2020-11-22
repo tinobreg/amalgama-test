@@ -4,13 +4,12 @@
 namespace royalWars;
 
 use royalWars\interfaces\ITrainable;
-use royalWars\interfaces\ITransformable;
 
 /**
  * Class RegimentUnity
  * @package royalWars
  */
-abstract class RegimentUnit implements ITrainable, ITransformable
+abstract class RegimentUnit implements ITrainable
 {
     /**
      * Possibles Unities types
@@ -40,24 +39,11 @@ abstract class RegimentUnit implements ITrainable, ITransformable
     protected $trainingQuantity = 0;
 
     /**
-     * @var integer
-     */
-    protected $transformationCost;
-
-    /**
      * @inheritDoc
      */
     public function getTotalPower()
     {
         return $this->startPower + ( $this->trainingExtraPower * $this->trainingQuantity );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTransformationCost()
-    {
-        return $this->transformationCost;
     }
 
     /**
@@ -75,11 +61,6 @@ abstract class RegimentUnit implements ITrainable, ITransformable
     {
         $this->trainingQuantity = $this->trainingQuantity + 1;
     }
-
-    /**
-     * @inheritDoc
-     */
-    abstract public function canBeTransformed();
 
     /**
      * Returns the actual type

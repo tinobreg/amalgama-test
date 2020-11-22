@@ -2,12 +2,19 @@
 
 namespace royalWars;
 
+use royalWars\interfaces\ITransformable;
+
 /**
  * Class Archer
  * @package royalWars
  */
-class Archer extends RegimentUnit
+class Archer extends RegimentUnit implements ITransformable
 {
+
+    /**
+     * @var integer
+     */
+    protected $transformationCost;
 
     /**
      * Archer constructor.
@@ -42,5 +49,13 @@ class Archer extends RegimentUnit
     public function getCurrentType()
     {
         return RegimentUnit::UNITY_ARCHER;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTransformationCost()
+    {
+        return $this->transformationCost;
     }
 }

@@ -172,12 +172,8 @@ class Regiment
     public function saveBattleDetails($regiment, $result)
     {
         /** @var Regiment $regiment */
-        $this->battleHistory[] = [
-            'civilization' => $regiment->getName(),
-            'regiment' => $regiment->getId(),
-            'score' => $this->getRegimentTotalPower().' - '.$regiment->getRegimentTotalPower() ,
-            'result' => $result
-        ];
+        $score = $this->getRegimentTotalPower().' - '.$regiment->getRegimentTotalPower();
+        $this->battleHistory[] = new BattleHistory($regiment->getName(), $regiment->getId(), $score, $result);
 
         $this->processBattleResult($result);
     }
