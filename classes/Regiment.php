@@ -92,60 +92,82 @@ class Regiment
      * Tries to train given unity
      * @param string $unitType
      * @return string
+     * @throws \Exception
      */
     public function trainRegimentUnit($unitType)
     {
-        if (!empty($this->unities[$unitType])) {
-            $regimentUnit = $this->unities[$unitType][rand(0, count($this->unities[$unitType]))];
-            if ($regimentUnit instanceof ITrainable) {
-                if ($regimentUnit->getTrainingCost() <= $this->gold) {
-                    if ($regimentUnit->startTraining()) {
-                        $this->gold = $this->gold - $regimentUnit->getTrainingCost();
-                        return 'Entrenamiento finalizado';
-                    }
-                }
-                return 'No tienes suficiente oro';
-            }
-            return 'No se pudo entrenar la unidad';
+        if (empty($this->unities[$unitType])) {
+            return 'No tienes unidades para entrenar';
         }
 
-        return 'No tienes unidades para entrenar';
+        $regimentUnit = $this->unities[$unitType][$this->getRandomUnitPosition($unitType)];
+        if ($regimentUnit instanceof ITrainable) {
+            if ($regimentUnit->getTrainingCost() > $this->gold) {
+                return 'No tienes suficiente oro';
+            }
+
+            if ($regimentUnit->startTraining()) {
+                $this->gold = $this->gold - $regimentUnit->getTrainingCost();
+                return 'Entrenamiento finalizado';
+            }
+        }
+
+        return 'No se pudo entrenar la unidad';
     }
 
     /**
      * Tries to transform given unity
      * @param string $unitType
      * @return string
+     * @throws \Exception
      */
     public function transformRegimentUnit($unitType)
     {
         if (!empty($this->unities[$unitType])) {
-            $position = rand(0, count($this->unities[$unitType]));
-            $currentRegimentUnit = $this->unities[$unitType][$position];
-
-            if ($currentRegimentUnit instanceof ITransformable && $currentRegimentUnit->canMakeTransformation()) {
-                if ($currentRegimentUnit->getTransformationCost() <= $this->gold) {
-                    $this->gold = $this->gold - $currentRegimentUnit->getTransformationCost();
-                    $newRegimentUnit = $currentRegimentUnit->getTransformationNewModel();
-
-                    if ($newRegimentUnit instanceof RegimentUnit) {
-                        unset($this->unities[$unitType][$position]);
-                        $this->unities[$newRegimentUnit->getCurrentType()][] = $newRegimentUnit;
-                        return 'Entrenamiento finalizado';
-                    }
-                } else {
-                    return 'No tienes suficiente oro';
-                }
-            }
-            return 'La unidad no se pudo transformar';
+            return 'No tienes unidades para entrenar';
         }
-        return 'No tienes unidades para entrenar';
+
+        $position = $this->getRandomUnitPosition($unitType);
+        $currentRegimentUnit = $this->unities[$unitType][$position];
+
+        if ($currentRegimentUnit instanceof ITransformable && $currentRegimentUnit->canMakeTransformation()) {
+            if ($currentRegimentUnit->getTransformationCost() > $this->gold) {
+                return 'No tienes suficiente oro';
+            }
+
+            $this->gold = $this->gold - $currentRegimentUnit->getTransformationCost();
+            $newRegimentUnit = $currentRegimentUnit->getTransformationNewModel();
+
+            if ($newRegimentUnit instanceof RegimentUnit) {
+                unset($this->unities[$unitType][$position]);
+                $this->unities[$newRegimentUnit->getCurrentType()][] = $newRegimentUnit;
+                return 'Entrenamiento finalizado';
+            }
+        }
+
+        return 'La unidad no se pudo transformar';
+    }
+
+    /**
+     * Returns random unit for given unitType
+     * @param string $unitType
+     * @return int
+     * @throws \Exception
+     */
+    private function getRandomUnitPosition($unitType = RegimentUnit::UNITY_PIKEMAN)
+    {
+        if(!empty($this->unities[$unitType])) {
+            return rand(0, count($this->unities[$unitType]));
+        }
+
+        throw new \Exception('No hay unidades del tipo solicitado.');
     }
 
     /**
      * Save the battle and process the result
      * @param Regiment $regiment
      * @param $result
+     * @throws \Exception
      */
     public function saveBattleDetails($regiment, $result)
     {
@@ -162,7 +184,7 @@ class Regiment
 
     /**
      * Process the given Battle result and applies the rewards or punishments
-     * @param $result
+     * @throws \Exception
      */
     private function processBattleResult($result)
     {
@@ -179,7 +201,7 @@ class Regiment
                 }
             }
         } else if ($result == Battle::BATTLE_TIE) {
-            unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][rand(0, count($this->unities[RegimentUnit::UNITY_PIKEMAN]))]);
+            unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][$this->getRandomUnitPosition()]);
         }
     }
 
