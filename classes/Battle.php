@@ -25,20 +25,23 @@ class Battle
      * Receives two regiments and process their power to define the battle winner
      * @param Regiment $firstRegiment
      * @param Regiment $secondRegiment
+     * @throws \Exception
      */
     public static function newBattle(Regiment $firstRegiment, Regiment $secondRegiment)
     {
         $firstRegimentPower = $firstRegiment->getRegimentTotalPower();
         $secondRegimentPower = $secondRegiment->getRegimentTotalPower();
 
-        $firstRegimentResult = static::BATTLE_LOSE;
-        $secondRegimentResult = static::BATTLE_WIN;
+        $firstRegimentResult = $secondRegimentResult = static::BATTLE_TIE;
 
-        if ($firstRegimentPower == $secondRegimentPower) {
-            $firstRegimentResult = $secondRegimentResult = static::BATTLE_TIE;
-        } else if($firstRegimentPower > $secondRegimentPower) {
-            $firstRegimentResult = static::BATTLE_WIN;
-            $secondRegimentResult = static::BATTLE_LOSE;
+        if ($firstRegimentPower != $secondRegimentPower) {
+            if($firstRegimentPower > $secondRegimentPower) {
+                $firstRegimentResult = static::BATTLE_WIN;
+                $secondRegimentResult = static::BATTLE_LOSE;
+            } else {
+                $firstRegimentResult = static::BATTLE_LOSE;
+                $secondRegimentResult = static::BATTLE_WIN;
+            }
         }
 
         $firstRegiment->saveBattleDetails($secondRegiment, $firstRegimentResult);

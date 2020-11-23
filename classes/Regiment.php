@@ -180,6 +180,7 @@ class Regiment
 
     /**
      * Process the given Battle result and applies the rewards or punishments
+     * @param string $result
      * @throws \Exception
      */
     private function processBattleResult($result)
@@ -197,7 +198,11 @@ class Regiment
                 }
             }
         } else if ($result == Battle::BATTLE_TIE) {
-            unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][$this->getRandomUnitPosition()]);
+            if(!empty($this->unities[RegimentUnit::UNITY_PIKEMAN])) {
+                unlink($this->unities[RegimentUnit::UNITY_PIKEMAN][$this->getRandomUnitPosition()]);
+            } else {
+                unlink($this->unities[RegimentUnit::UNITY_ARCHER][$this->getRandomUnitPosition()]);
+            }
         }
     }
 
